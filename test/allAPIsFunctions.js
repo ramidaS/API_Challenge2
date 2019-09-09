@@ -23,19 +23,19 @@ let cancelOrderUrl = config.APIList.baseURL + config.APIList.cancelOrder(orderId
 module.exports = {
 //place order API
 placeOrder: async function (stops){
-        let response = ''
+    let response = ''
+    try{
         response = await axios.post(placeOrderUrl,{"stops": stops})
-        orderId = response.data.id
-        orderStatus = response.status
-        if (orderStatus === 201){
-            console.log('orderStatus is 201 created')
-        }
-        else if(err.response){
-            return err.response
-        }
-        //console.log(orderStatus)
-        console.log(orderId)
-        return response
+        console.log(response.data)
+    }
+    catch(error) {
+        console.log(error)
+    }
+    //orderId = response.data.id
+    orderStatus = response.status
+    console.log(orderStatus)
+    //console.log(orderId)
+    return response
 },
 
 // Place Order with schedule time API

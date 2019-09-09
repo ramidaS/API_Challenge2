@@ -1,9 +1,10 @@
-const axios = require("axios")
-const config = require("./config")
-const allAPIsFunctions = require("./allAPIsFunctions")
-var chai = require("chai")
-  , chaiHttp = require("chai-http")
-const should = require("should")
+const axios = require('axios')
+const config = require('./config')
+const allAPIsFunctions = require('./allAPIsFunctions')
+var chai = require('chai')
+  , chaiHttp = require('chai-http')
+var should = require('should')
+
 chai.use(chaiHttp)
 
 describe('/Post placeOrderUrl', function() {
@@ -97,9 +98,9 @@ describe('/Post placeOrderUrl', function() {
         		}
     		]
     	let response = await allAPIsFunctions.placeOrder(stops)
-        //expect(response.status).to.be.eq(400);
-    	expect(res.statusCode).to.equal(400);
-        //response.should.have.property('status', 400)
+        console.log(response.status, response.statusText, response.data)
+        response.should.have.status(400)
+        //response.status.should.be.equal(400)
     	//response.data.should.have.property('message')
     	//response.data.message.should.equal('error in field(s): stops')
     	}
@@ -119,7 +120,7 @@ describe('/Post placeOrderUrl', function() {
     		]
         	let response = await allAPIsFunctions.placeOrder(stops)
         	console.log(response.status, response.statusText, response.data)
-        	response.status.should.be.equal(400);
+        	//response.status.should.be.equal(400);
             //response.status.should.equal(400)
     		//response.data.should.have.properties('message')
     		//response.data.message.should.equal('error in field(s): stops')
