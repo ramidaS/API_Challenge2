@@ -2,6 +2,7 @@ const axios = require("axios")
 const config = require("./config")
 let orderId = 20
 let scheduledTime = null
+let orderStatus = 200
 let locations =  [
         {
             "lat": 22.344674, "lng": 114.124651
@@ -25,6 +26,15 @@ placeOrder: async function (stops){
         let response = ''
         response = await axios.post(placeOrderUrl,{"stops": stops})
         orderId = response.data.id
+        orderStatus = response.status
+        if (orderStatus === 201){
+            console.log('orderStatus is 201 created')
+        }
+        else if(err.response){
+            return err.response
+        }
+        //console.log(orderStatus)
+        console.log(orderId)
         return response
 },
 
@@ -63,9 +73,7 @@ cancelOrder: async function (){
     console.log(response.data)
     return response()
 }
-
 }
-
 
 
 
