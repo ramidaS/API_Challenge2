@@ -26,14 +26,14 @@ placeOrder: async function (stops){
     let response = ''
     try{
         response = await axios.post(placeOrderUrl,{"stops": stops})
-        console.log(response.data)
+        //console.log(response.data)
     }
     catch(error) {
         console.log(error)
     }
     //orderId = response.data.id
-    orderStatus = response.status
-    console.log(orderStatus)
+    //orderStatus = response.status
+    //console.log(orderStatus)
     //console.log(orderId)
     return response
 },

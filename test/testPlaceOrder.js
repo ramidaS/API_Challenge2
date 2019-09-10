@@ -9,7 +9,7 @@ chai.use(chaiHttp)
 
 describe('/Post placeOrderUrl', function() {
 	//case 1: Place order successfully	
-        it('return 201, created and body', async function() {
+        it('1) return 201, created and body', async function() {
         	let stops =  [
         		{
             		"lat": 22.344674, "lng": 114.124651
@@ -29,7 +29,7 @@ describe('/Post placeOrderUrl', function() {
         }
         )
     //case 2: Place order with 2 locations
-        it('return 201 with 2 locations', async function(){
+        it('2) return 201 with 2 locations', async function(){
             let stops =  [
                 {
                     "lat": 22.344674, "lng": 114.124651
@@ -46,7 +46,7 @@ describe('/Post placeOrderUrl', function() {
         )   
 
     //case 3: Place order with more than 3 locations
-        it('return 201 with more than 3 locations', async function() {
+        it('3) return 201 with more than 3 locations', async function() {
             let stops =  [
                 {
                     "lat": 22.344674, "lng": 114.124651
@@ -69,7 +69,7 @@ describe('/Post placeOrderUrl', function() {
         }
         )
     //case 4: Place order with duplicate locations will return $20 as minimum fare.
-        it('return warning because same locations for pick up and delivery', async function() {
+        it('4) Place order with duplicate locations will return $20 as minimum fare.', async function() {
             let stops =  [
                 {
                     "lat": 22.344674, "lng": 114.124651
@@ -91,22 +91,29 @@ describe('/Post placeOrderUrl', function() {
         )      
 
     //case 5: Place order with only 1 location sent
-    	it('return 400 because one location sent', async function(){
+    	it('5) return 400 because one location sent', async function(){
     		let stops = [
     			{
             		"lat": 22.344674, "lng": 114.124651
         		}
     		]
     	let response = await allAPIsFunctions.placeOrder(stops)
-        console.log(response.status, response.statusText, response.data)
-        response.should.have.status(400)
+        //console.log(response.status, response.statusText, response.data)
+        var expect = require(response).expect
+        ,status = 400
+        ,data = { message: 'error in field(s): stops' }
+
+        expect(status).to.equal(400)
+        expect(data.message).to.equal('error in field(s): stops')
+
+        //response.should.have.status(400)
         //response.status.should.be.equal(400)
     	//response.data.should.have.property('message')
     	//response.data.message.should.equal('error in field(s): stops')
     	}
     )
     //case 6: Place order with invalid lat, lng
-    	it('return 400 because invalid lat, lng', async function() {
+    	it('6) return 400 because invalid lat, lng', async function() {
         	let stops =  [
         		{
             		"lat": 'abc', "lng": 'def'
@@ -120,6 +127,11 @@ describe('/Post placeOrderUrl', function() {
     		]
         	let response = await allAPIsFunctions.placeOrder(stops)
         	console.log(response.status, response.statusText, response.data)
+            var expect = require(response).expect
+            ,status = 400
+            ,data = {message:''}
+            expect(status).to.equal(400)
+            expect(data.message).to.equal('')
         	//response.status.should.be.equal(400);
             //response.status.should.equal(400)
     		//response.data.should.have.properties('message')
