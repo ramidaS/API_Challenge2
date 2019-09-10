@@ -26,24 +26,23 @@ placeOrder: async function (stops){
     let response = ''
     try{
         response = await axios.post(placeOrderUrl,{"stops": stops})
-        //console.log(response.data)
+        return response
     }
     catch(error) {
-        console.log(error)
+        return error.response
     }
-    //orderId = response.data.id
-    //orderStatus = response.status
-    //console.log(orderStatus)
-    //console.log(orderId)
-    return response
 },
 
 // Place Order with schedule time API
 scheduleOrder: async function (orderAt, stops){
         let response = ''
-        response = await axios.post(placeOrderUrl, {"orderAt": orderAt, "stops": stops})
-        console.log(response.data)
-        return response
+        try{
+            response = await axios.post(placeOrderUrl, {"orderAt": orderAt, "stops": stops})
+            return response
+        }
+        catch(error){
+            return error.response
+        }
 },
 
 // Get order details API

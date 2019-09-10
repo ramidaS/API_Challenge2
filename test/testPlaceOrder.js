@@ -2,8 +2,9 @@ const axios = require('axios')
 const config = require('./config')
 const allAPIsFunctions = require('./allAPIsFunctions')
 var chai = require('chai')
-  , chaiHttp = require('chai-http')
-var should = require('should')
+    , chaiHttp = require('chai-http')
+var expect = require('expect')
+var should = require('chai').should()
 
 chai.use(chaiHttp)
 
@@ -24,8 +25,11 @@ describe('/Post placeOrderUrl', function() {
         	let response = await allAPIsFunctions.placeOrder(stops)
         	console.log(response.status, response.statusText, response.data)
         	response.status.should.equal(201)
-        	response.data.should.have.properties('id', 'drivingDistancesInMeters', 'fare')
-        	response.data.fare.should.have.properties('amount','currency')
+        	response.data.should.have.property('id')
+            response.data.should.have.property('drivingDistancesInMeters')
+            response.data.should.have.property('fare')
+        	response.data.fare.should.have.property('amount')
+            response.data.fare.should.have.property('currency')
         }
         )
     //case 2: Place order with 2 locations
@@ -40,8 +44,11 @@ describe('/Post placeOrderUrl', function() {
             let response = await allAPIsFunctions.placeOrder(stops)
             console.log(response.status, response.statusText, response.data)
             response.status.should.equal(201)
-            response.data.should.have.properties('id', 'drivingDistancesInMeters', 'fare')
-            response.data.fare.should.have.properties('amount','currency')
+            response.data.should.have.property('id')
+            response.data.should.have.property('drivingDistancesInMeters')
+            response.data.should.have.property('fare')
+            response.data.fare.should.have.property('amount')
+            response.data.fare.should.have.property('currency')
         }
         )   
 
@@ -64,8 +71,11 @@ describe('/Post placeOrderUrl', function() {
             let response = await allAPIsFunctions.placeOrder(stops)
             console.log(response.status, response.statusText, response.data)
             response.status.should.equal(201)
-            response.data.should.have.properties('id', 'drivingDistancesInMeters', 'fare')
-            response.data.fare.should.have.properties('amount','currency')
+            response.data.should.have.property('id')
+            response.data.should.have.property('drivingDistancesInMeters')
+            response.data.should.have.property('fare')
+            response.data.fare.should.have.property('amount')
+            response.data.fare.should.have.property('currency')
         }
         )
     //case 4: Place order with duplicate locations will return $20 as minimum fare.
@@ -84,7 +94,9 @@ describe('/Post placeOrderUrl', function() {
             let response = await allAPIsFunctions.placeOrder(stops)
             console.log(response.status, response.statusText, response.data)
             response.status.should.equal(201)
-            response.data.should.have.properties('id', 'drivingDistancesInMeters', 'fare')
+            response.data.should.have.property('id')
+            response.data.should.have.property('drivingDistancesInMeters')
+            response.data.should.have.property('fare')
             response.data.fare.should.have.property('amount', '20.00')
             response.data.fare.should.have.property('currency','HKD')
         }
@@ -98,18 +110,10 @@ describe('/Post placeOrderUrl', function() {
         		}
     		]
     	let response = await allAPIsFunctions.placeOrder(stops)
-        //console.log(response.status, response.statusText, response.data)
-        var expect = require(response).expect
-        ,status = 400
-        ,data = { message: 'error in field(s): stops' }
-
-        expect(status).to.equal(400)
-        expect(data.message).to.equal('error in field(s): stops')
-
-        //response.should.have.status(400)
-        //response.status.should.be.equal(400)
-    	//response.data.should.have.property('message')
-    	//response.data.message.should.equal('error in field(s): stops')
+        
+        response.status.should.equal(400)
+    	response.data.should.have.property('message')
+    	response.data.message.should.equal('error in field(s): stops')
     	}
     )
     //case 6: Place order with invalid lat, lng
@@ -125,22 +129,34 @@ describe('/Post placeOrderUrl', function() {
             		"lat": 'mno', "lng": 'pqr'
         		}
     		]
-        	let response = await allAPIsFunctions.placeOrder(stops)
-        	console.log(response.status, response.statusText, response.data)
-            var expect = require(response).expect
-            ,status = 400
-            ,data = {message:''}
-            expect(status).to.equal(400)
-            expect(data.message).to.equal('')
-        	//response.status.should.be.equal(400);
-            //response.status.should.equal(400)
-    		//response.data.should.have.properties('message')
-    		//response.data.message.should.equal('error in field(s): stops')
-        	
+        let response = await allAPIsFunctions.placeOrder(stops)
+    	response.status.should.equal(400)
+        response.data.should.have.property('message')
+        response.data.message.should.equal('Invalid locations')
+        //Failed by intention because API returned message as empty string. Actually API should have error message to display.
         }
         )
-      
-    
-    //case 7: Place order with different country locations
+      //case 7: Place order with different country locations
+        it('7) Place order with different country locations', async function(){
+            let stops = [
+                {
+                    "lat": 22.344674, "lng": 114.124651 //Hong Kong
+                },
+                {
+                    "lat": 13.756331, "lng": 100.501762 //Bangkok, Thailand
+                }
+            ]
+        let response = await allAPIsFunctions.placeOrder(stops)
+        response.status.should.equal(503)       //Per response from Postman
+        response.data.should.have.property('message')
+        response.data.message.should.equal('Service Unavailable')       //Per response from Postman
+            
+
+        }
+
+
+
+            )
+
 }
 )
