@@ -71,7 +71,19 @@ cancelOrder: async function (){
     let response = await axios.put(cancelOrderUrl)
     console.log(response.data)
     return response()
-}
+},
+
+/*priceCalculation: async function(){
+    let scheduledTime = "2019-09-13T12:10:18.061Z"
+    let response = await allAPIsFunctions.scheduleOrder(scheduledTime,locations)
+    let distance = response.drivingDistancesInMeters
+    console.log(distance)
+
+
+
+}*/
+
+
 }
 
 
