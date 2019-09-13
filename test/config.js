@@ -1,5 +1,9 @@
+var moment = require('moment');
+
 module.exports = {
-	var moment = require('moment-timezone');
+	//timezone = 
+	//moment().utcOffset()
+
 	APIList: {
 		baseURL: 'http://localhost:51544',
 		placeOrder: '/v1/orders',

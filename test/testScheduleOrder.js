@@ -5,23 +5,18 @@ var chai = require('chai')
     , chaiHttp = require('chai-http')
 var expect = require('expect')
 var should = require('chai').should()
-
-var moment = require('moment')
-
 chai.use(chaiHttp)
+const calculationFunctions = require('./calculationFunctions')
+var moment = require('moment')
+moment().format();
 
 var today = new Date()
-console.log(today)
-/*var testDate = moment(today).add(1, 'day')
-console.log(testDate)*/
 
+describe('/Post placeOrderUrl WITH orderAt value', function() {
 
-describe('/Post placeOrderUrl', function() {
+	it('1: Schedule order for next day', async function(){
 
-	//case 1: Schedule order with future date
-	it('1) Schedule order for next day', async function(){
-
-		let orderAt = moment(today).add(1, 'day')
+		let orderAt = moment.utc(today).add(1, 'day')
 		//console.log(orderAt)
 		let stops =  [
         		{
@@ -35,20 +30,21 @@ describe('/Post placeOrderUrl', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-    	console.log(response.status, response.statusText, response.data)
-        response.status.should.equal(201)
-        response.data.should.have.property('id')
-        response.data.should.have.property('drivingDistancesInMeters')
-        response.data.should.have.property('fare')
-        response.data.fare.should.have.property('amount')
-        response.data.fare.should.have.property('currency')
+        console.log(response.status, response.data)
+    	if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'Invalid')
+        }
 	})
 
-	//case 2: Schedule order with future time
-	it('2) Schedule order for next hour', async function(){
+	
+	it('2: Schedule order for next hour', async function(){
 
-		let orderAt = moment(today).add(1, 'hour')
-		//console.log(orderAt)
+		let orderAt = moment.utc(today).add(1, 'hour')
+        let convertTime = moment(orderAt).format()
 		let stops =  [
         		{
             		"lat": 22.344674, "lng": 114.124651
@@ -61,20 +57,20 @@ describe('/Post placeOrderUrl', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-    	console.log(response.status, response.statusText, response.data)
-        response.status.should.equal(201)
-        response.data.should.have.property('id')
-        response.data.should.have.property('drivingDistancesInMeters')
-        response.data.should.have.property('fare')
-        response.data.fare.should.have.property('amount')
-        response.data.fare.should.have.property('currency')
+        console.log(response.status, response.data)
+    	if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'Invalid')
+        }
 	})
 
-	//case 3: Schedule order with current date time
-	it('3) Schedule order current date time', async function(){
+	
+	it('3: Schedule order current date time. Expected 400', async function(){
 
-		let orderAt = new Date()
-		console.log(orderAt)
+		let orderAt = moment.utc(today)
 		let stops =  [
         		{
             		"lat": 22.344674, "lng": 114.124651
@@ -87,14 +83,19 @@ describe('/Post placeOrderUrl', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-    	response.status.should.equal(400)
-    	response.data.should.have.property('message')
-    	response.data.message.should.equal('field orderAt is behind the present time')
+        console.log(response.status, response.data)
+    	if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is behind the present time')
+        }
         
 	})
 
-	//case 4: Schedule order but orderAt is null
-	it('4) Schedule order but orderAt is null.', async function(){
+	
+	it('4: Schedule order but orderAt is null.', async function(){
 
 		let orderAt = null
 		let stops =  [
@@ -109,16 +110,18 @@ describe('/Post placeOrderUrl', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        response.status.should.equal(201)
-        response.data.should.have.property('id')
-        response.data.should.have.property('drivingDistancesInMeters')
-        response.data.should.have.property('fare')
-        response.data.fare.should.have.property('amount')
-        response.data.fare.should.have.property('currency')
+        console.log(response.status, response.data)
+       if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'Invalid')
+        }
 	})
 
-	//case 5: Schedule order but orderAt is empty string
-	it('5) Schedule order but orderAt is empty string', async function(){
+	
+	it('5: Schedule order but orderAt is empty string', async function(){
 		let orderAt = ''
 		let stops =  [
         		{
@@ -133,27 +136,206 @@ describe('/Post placeOrderUrl', function() {
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
     	console.log(response.status, response.statusText, response.data)
-    	response.status.should.equal(400)
-    	response.data.should.have.property('message')
-    	response.data.message.should.equal('field orderAt is empty')
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
     	//Failed by intention because API returned message as empty string. Actually API should have error message to display.
 	})
 
+    
+    it('6: Check price more than 2 km during 5:00:00- 21:59:59, 2 stops.', async function(){
+        let date = '2019-10-10T05:00:00.000Z'      
+        let orderAt = moment.utc(date)
+        let stops =  [                               // 1.5km
+                {
+                    "lat": 22.276148, "lng": 114.172160
+                },
+                {
+                    "lat": 22.278967, "lng": 114.183168
+                }
+        ]
+        let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
+        console.log(response.status, response.data)
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
+    })
 
+    it('7: check price with total distance = 2km during 5:00:00- 21:59:59', async function(){
+        let date = '2019-10-10T21:00:00.000Z'      
+        let orderAt = moment.utc(date)
+        let stops =  [                               // 2km
+                {
+                    "lat": 22.276148, "lng": 114.172160
+                },
+                {
+                    "lat": 22.281631, "lng": 114.189580
+                }
+        ]
+        let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
+        console.log(response.status, response.data)
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
+    })
+    
+    it('8: Check price with total distance > 2 km during 5:00:00- 21:59:59', async function(){
+        let date = '2019-10-10T21:59:59.000Z'      
+        let orderAt = moment.utc(date)
+        let stops =  [                               // ~21km
+                {
+                    "lat": 22.276148, "lng": 114.172160
+                },
+                {
+                    "lat": 22.342844, "lng": 114.205826
+                }
+        ]
+        let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
+        console.log(response.status, response.data)
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
 
+    } )
+
+    it('9: check price more than 2 km during  5:00:00- 21:59:59, 3 stops.', async function(){
+        let date = '2019-10-10T22:00:00.000Z'      
+        let orderAt = moment.utc(date)
+        //console.log('orderAt: '+orderAt)
+        let stops =  [                               //total ~3.5km
+                {
+                    "lat": 22.276148, "lng": 114.172160
+                },
+                {
+                    "lat": 22.278967, "lng": 114.183168
+                },
+                {
+                    "lat": 22.281631, "lng": 114.172160   
+                }
+        ]
+        let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
+        console.log(response.status, response.data)
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
+
+    } )
+
+    it('10: Check price with in 2 km during 22:00:00 - 4:59:59, 2 stops', async function(){
+        let date = '2019-10-10T04:59:00.000Z'      
+        let orderAt = moment.utc(date)
+        let stops =  [                               // 1.5km
+                {
+                    "lat": 22.276148, "lng": 114.172160
+                },
+                {
+                    "lat": 22.278967, "lng": 114.183168
+                }
+        ]
+        let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
+        console.log(response.status, response.data)
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
+
+    })
+
+    it('11: Check price with total distance = 2 km during 22:00:00 - 4:59:59', async function(){
+        let date = '2019-10-10T22:00:01.000Z'      
+        let orderAt = moment.utc(date)
+        let stops =  [                               // 2km
+                {
+                    "lat": 22.276148, "lng": 114.172160
+                },
+                {
+                    "lat": 22.281631, "lng": 114.189580
+                }
+        ]
+        let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
+        console.log(response.status, response.data)
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
+
+    })
+
+    it('12: Check price more than 2 km during 22:00:00 - 4:59:59, 2 stops', async function(){
+        let date = '2019-10-10T04:59:59.000Z'      
+        let orderAt = moment.utc(date)
+        let stops =  [                               // ~21km
+                {
+                    "lat": 22.276148, "lng": 114.172160
+                },
+                {
+                    "lat": 22.342844, "lng": 114.205826
+                }
+        ]
+        let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
+        console.log(response.status, response.data)
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
+
+    })
+
+    it('13: Check price more than 2 km during 5:00:01 am - 9:59:59 pm, 3 stops ', async function(){
+        let date = '2019-10-10T01:50:30.000Z'      
+        let orderAt = moment.utc(date)
+        let stops =  [                               // ~21km
+                {
+                    "lat": 22.276148, "lng": 114.172160
+                },
+                {
+                    "lat": 22.278967, "lng": 114.183168
+                },
+                {
+                    "lat": 22.281631, "lng": 114.172160   
+                }
+        ]
+        let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
+        console.log(response.status, response.data)
+        if (response.status === 201){
+            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
+        }
+        else{
+            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
+        }
+
+    })
 })
 
-
-
-
-
-//case 8: Check price with in 2 km during 5:00:01 am - 9:59:59 pm, 2 stops
-//case 9: Check price more than 2 km during 5:00:01 am - 9:59:59 pm, 2 stops
-//case 10: Check price with in 2 km during 10:00:00 pm - 5:00:00 am, 2 stops
-//case 11: Check price more than 2 km during 10:00:00 pm - 5:00:00 am, 2 stops
-//case 8: Check price with in 2 km during 5:00:01 am - 9:59:59 pm, 3 stops
-//case 9: Check price more than 2 km during 5:00:01 am - 9:59:59 pm, 3 stops
-//case 10: Check price with in 2 km during 10:00:00 pm - 5:00:00 am, 3 stops
-//case 11: Check price more than 2 km during 10:00:00 pm - 5:00:00 am, 3 stops
 
 

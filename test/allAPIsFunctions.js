@@ -21,67 +21,57 @@ let completeOrderUrl= config.APIList.baseURL + config.APIList.completeOrder(orde
 let cancelOrderUrl = config.APIList.baseURL + config.APIList.cancelOrder(orderId)
 
 module.exports = {
-//place order API
-placeOrder: async function (stops){
-    let response = ''
-    try{
-        response = await axios.post(placeOrderUrl,{"stops": stops})
-        return response
-    }
-    catch(error) {
-        return error.response
-    }
-},
-
-// Place Order with schedule time API
-scheduleOrder: async function (orderAt, stops){
+    //place order API
+    placeOrder: async function (stops){
         let response = ''
         try{
-            response = await axios.post(placeOrderUrl, {"orderAt": orderAt, "stops": stops})
+            response = await axios.post(placeOrderUrl,{"stops": stops})
             return response
         }
-        catch(error){
+        catch(error) {
             return error.response
         }
-},
+    },
 
-// Get order details API
-getOrderDetails: async function (){
-    let response = await axios.get(orderDetailsUrl)
-    console.log(response.data)
-    return response
-},
+    // Place Order with schedule time API
+    scheduleOrder: async function (orderAt, stops){
+            let response = ''
+            try{
+                response = await axios.post(placeOrderUrl, {"orderAt": orderAt, "stops": stops})
+                return response
+            }
+            catch(error){
+                return error.response
+            }
+    },
 
-//Driver to take order API
-driverTakeOrder: async function (){
-    let response = await axios.put(takeOrderUrl)
-    console.log(response.data)
-    return response()
-},
+    // Get order details API
+    getOrderDetails: async function (){
+        let response = await axios.get(orderDetailsUrl)
+        console.log(response.data)
+        return response
+    },
 
-//Driver to complete order API
-driverCompleteOrder: async function (){
-    let response = await axios.put(completeOrderUrl)
-    console.log(response.data)
-    return response()
-},
+    //Driver to take order API
+    driverTakeOrder: async function (){
+        let response = await axios.put(takeOrderUrl)
+        console.log(response.data)
+        return response()
+    },
 
-//Cancel order API
-cancelOrder: async function (){
-    let response = await axios.put(cancelOrderUrl)
-    console.log(response.data)
-    return response()
-},
+    //Driver to complete order API
+    driverCompleteOrder: async function (){
+        let response = await axios.put(completeOrderUrl)
+        console.log(response.data)
+        return response()
+    },
 
-/*priceCalculation: async function(){
-    let scheduledTime = "2019-09-13T12:10:18.061Z"
-    let response = await allAPIsFunctions.scheduleOrder(scheduledTime,locations)
-    let distance = response.drivingDistancesInMeters
-    console.log(distance)
-
-
-
-}*/
+    //Cancel order API
+    cancelOrder: async function (){
+        let response = await axios.put(cancelOrderUrl)
+        console.log(response.data)
+        return response()
+    }
 
 
 }
