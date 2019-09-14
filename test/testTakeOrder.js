@@ -12,7 +12,7 @@ moment().format();
 
 let responseBody = []
 let expectedStatusCode = 200
-let expectedOrderStatus = 'ONGOING'
+let expectedOrderStatus = 'ASSIGNING'
 
 function checkResponse(responseBody, expectedStatusCode, expectedOrderStatus){
 		if(responseBody.status === 200){
@@ -74,26 +74,26 @@ describe('Put /takeOrder', function(){
 	it.only('2: take invalid order id', async function(){
 		orderId = 'abc'
 		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
-		checkResponse(takeOrder, 404, '404 page not found\n')
+		checkResponse(takeOrder, 404)
 	})
 
 	it('3: take order which is already taken', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		checkResponse(takeOrder2, 422, 'Order status is not ASSIGNING')
+		checkResponse(takeOrder2, 422)
 	})
 
 	it('4: take order which is already completed.', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		checkResponse(takeOrder2, 422, 'Order status is not ASSIGNING')
+		checkResponse(takeOrder2, 422)
 	})
 
 	it('5: take order which is already cancelled.', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let cancelOrder = await allAPIsFunctions.cancelOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		checkResponse(takeOrder2, 422, 'Order status is not ASSIGNING')
+		checkResponse(takeOrder2, 422)
 	})
 })

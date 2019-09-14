@@ -66,7 +66,6 @@ module.exports = {
         try{
             console.log(takeOrderUrl)
             let response = await axios.put(takeOrderUrl)
-            console.log(response.data)
             return response
         }
         catch(error){
@@ -79,7 +78,6 @@ module.exports = {
         let completeOrderUrl= config.APIList.baseURL + config.APIList.completeOrder(orderId)
         try{
             let response = await axios.put(completeOrderUrl)
-            console.log(response.data)
             return response
         }
         catch(error){
