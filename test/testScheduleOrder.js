@@ -32,7 +32,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
     	if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -59,7 +59,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
     	if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -85,7 +85,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
     	if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -112,7 +112,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
        if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -137,7 +137,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
     	console.log(response.status, response.statusText, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -161,7 +161,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -183,7 +183,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -205,7 +205,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -232,7 +232,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -255,7 +255,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -278,7 +278,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -301,7 +301,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{
@@ -327,7 +327,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
         console.log(response.status, response.data)
         if (response.status === 201){
-            calculationFunctions.checkResponse200(response, 201)
+            calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
         }
         else{

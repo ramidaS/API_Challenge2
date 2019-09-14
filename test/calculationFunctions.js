@@ -80,7 +80,7 @@ let response = allAPIsFunctions.scheduleOrder(scheduledTime,locations)
 
 module.exports = {
 
-	checkResponse200: function (responseBody, expectedStatus){
+	checkResponse201: function (responseBody, expectedStatus){
 	    
 	    responseBody.status.should.equal(expectedStatus)
 	    responseBody.data.should.have.property('id')

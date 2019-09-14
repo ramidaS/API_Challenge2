@@ -62,50 +62,38 @@ describe('Put /takeOrder', function(){
 	beforeEach(async function(){
 		let response = await allAPIsFunctions.scheduleOrder(orderAt,locations)
 		orderId = response.data.id
-		return orderId
-		})
+		return response, orderId
+	})
 
 	it('1: take normal order', async function(){
 		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
 		console.log(takeOrder.status, takeOrder.data)
 		checkResponse(takeOrder, 200, 'ONGOING')
-		/*takeOrder.status.should.equal(200)
-		takeOrder.data.status.should.equal('ONGOING')
-		takeOrder.data.should.have.property('ongoingTime')*/
-
 	})
 
-	it('2: take invalid order id', async function(){
+	it.only('2: take invalid order id', async function(){
 		orderId = 'abc'
 		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
-		//console.log(takeOrder)
 		checkResponse(takeOrder, 404, '404 page not found\n')
-		//takeOrder.status.should.equal(404)
-		//takeOrder.data.should.equal('404 page not found\n')
-
 	})
 
 	it('3: take order which is already taken', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		checkResponse(takeOrder, 422, 'Order status is not ASSIGNING')
-		//takeOrder2.status.should.equal(422)
-		//takeOrder2.data.should.have.property('message')
-		//takeOrder2.data.message.should.equal('Order status is not ASSIGNING')
-
+		checkResponse(takeOrder2, 422, 'Order status is not ASSIGNING')
 	})
 
 	it('4: take order which is already completed.', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		checkResponse(takeOrder, 422, 'Order status is not ASSIGNING')
+		checkResponse(takeOrder2, 422, 'Order status is not ASSIGNING')
 	})
 
 	it('5: take order which is already cancelled.', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let cancelOrder = await allAPIsFunctions.cancelOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		checkResponse(takeOrder, 422, 'Order status is not ASSIGNING')
+		checkResponse(takeOrder2, 422, 'Order status is not ASSIGNING')
 	})
 })
