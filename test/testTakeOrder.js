@@ -10,6 +10,38 @@ const calculationFunctions = require('./calculationFunctions')
 var moment = require('moment')
 moment().format();
 
+let responseBody = []
+let expectedStatusCode = 200
+let expectedOrderStatus = 'ONGOING'
+
+function checkResponse(responseBody, expectedStatusCode, expectedOrderStatus){
+		if(responseBody.status === 200){
+			responseBody.status.should.equal(expectedStatusCode)
+			responseBody.data.status.should.equal(expectedOrderStatus)
+			responseBody.data.should.have.property('ongoingTime')
+			console.log('pass 200')
+
+		}
+		else if(responseBody.status === 422)
+		{
+			responseBody.status.should.equal(expectedStatusCode)
+			responseBody.data.should.have.property('message')
+			responseBody.data.message.should.equal('Order status is not ASSIGNING')
+			console.log('pass 422')
+		}
+		else if(responseBody.status === 404)
+		{	
+			responseBody.status.should.equal(expectedStatusCode)
+			responseBody.data.should.equal('404 page not found\n')
+			console.log('pass 404')
+		}
+		else{
+			console.log('invalid')
+		}
+
+	}
+
+
 describe('Put /takeOrder', function(){
 	let scheduledTime = new Date("2019-09-15T15:10:18.061Z")
 	let orderAt = moment.utc(scheduledTime)
@@ -25,20 +57,21 @@ describe('Put /takeOrder', function(){
 	        "lat": 22.385669, "lng": 114.186962
 	    }
 	]
+	let responseBody = []
 
 	beforeEach(async function(){
 		let response = await allAPIsFunctions.scheduleOrder(orderAt,locations)
 		orderId = response.data.id
 		return orderId
 		})
-	
 
 	it('1: take normal order', async function(){
 		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
 		console.log(takeOrder.status, takeOrder.data)
-		takeOrder.status.should.equal(200)
+		checkResponse(takeOrder, 200, 'ONGOING')
+		/*takeOrder.status.should.equal(200)
 		takeOrder.data.status.should.equal('ONGOING')
-		takeOrder.data.should.have.property('ongoingTime')
+		takeOrder.data.should.have.property('ongoingTime')*/
 
 	})
 
@@ -46,17 +79,19 @@ describe('Put /takeOrder', function(){
 		orderId = 'abc'
 		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
 		//console.log(takeOrder)
-		takeOrder.status.should.equal(404)
-		takeOrder.data.should.equal('404 page not found\n')
+		checkResponse(takeOrder, 404, '404 page not found\n')
+		//takeOrder.status.should.equal(404)
+		//takeOrder.data.should.equal('404 page not found\n')
 
 	})
 
 	it('3: take order which is already taken', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		takeOrder2.status.should.equal(422)
-		takeOrder2.data.should.have.property('message')
-		takeOrder2.data.message.should.equal('Order status is not ASSIGNING')
+		checkResponse(takeOrder, 422, 'Order status is not ASSIGNING')
+		//takeOrder2.status.should.equal(422)
+		//takeOrder2.data.should.have.property('message')
+		//takeOrder2.data.message.should.equal('Order status is not ASSIGNING')
 
 	})
 
@@ -64,25 +99,13 @@ describe('Put /takeOrder', function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		takeOrder2.status.should.equal(422)
-		takeOrder2.data.should.have.property('message')
-		takeOrder2.data.message.should.equal('Order status is not ASSIGNING')
-
-
+		checkResponse(takeOrder, 422, 'Order status is not ASSIGNING')
 	})
 
 	it('5: take order which is already cancelled.', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let cancelOrder = await allAPIsFunctions.cancelOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
-		takeOrder2.status.should.equal(422)
-		takeOrder2.data.should.have.property('message')
-		takeOrder2.data.message.should.equal('Order status is not ASSIGNING')
-
+		checkResponse(takeOrder, 422, 'Order status is not ASSIGNING')
 	})
-
-
-
-
-
-	})
+})
