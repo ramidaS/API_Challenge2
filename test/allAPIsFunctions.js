@@ -15,8 +15,8 @@ let locations =  [
         }
     ]
 const placeOrderUrl = config.APIList.baseURL + config.APIList.placeOrder
-let orderDetailsUrl = config.APIList.baseURL + config.APIList.orderDetails(orderId)
-let takeOrderUrl = config.APIList.baseURL + config.APIList.takeOrder(orderId)
+//let orderDetailsUrl = config.APIList.baseURL + config.APIList.orderDetails(orderId)
+//let takeOrderUrl = config.APIList.baseURL + config.APIList.takeOrder(orderId)
 let completeOrderUrl= config.APIList.baseURL + config.APIList.completeOrder(orderId)
 let cancelOrderUrl = config.APIList.baseURL + config.APIList.cancelOrder(orderId)
 
@@ -46,31 +46,49 @@ module.exports = {
     },
 
     // Get order details API
-    getOrderDetails: async function (){
+    getOrderDetails: async function (orderId){
+        let orderDetailsUrl = config.APIList.baseURL + config.APIList.orderDetails(orderId)
         let response = await axios.get(orderDetailsUrl)
         console.log(response.data)
         return response
     },
 
     //Driver to take order API
-    driverTakeOrder: async function (){
-        let response = await axios.put(takeOrderUrl)
-        console.log(response.data)
-        return response()
+    driverTakeOrder: async function (orderId){
+        try{
+            let takeOrderUrl = config.APIList.baseURL + config.APIList.takeOrder(orderId)
+            console.log(takeOrderUrl)
+            let response = await axios.put(takeOrderUrl)
+            console.log(response.data)
+            return response
+        }
+        catch(error){
+            return error.response
+        }
     },
 
     //Driver to complete order API
-    driverCompleteOrder: async function (){
-        let response = await axios.put(completeOrderUrl)
-        console.log(response.data)
-        return response()
+    driverCompleteOrder: async function (orderId){
+        try{
+            let response = await axios.put(completeOrderUrl)
+            console.log(response.data)
+            return response
+        }
+        catch(error){
+            return error.response
+        }
     },
-
     //Cancel order API
-    cancelOrder: async function (){
-        let response = await axios.put(cancelOrderUrl)
-        console.log(response.data)
-        return response()
+    cancelOrder: async function (orderId){
+        try{
+            let response = await axios.put(cancelOrderUrl)
+            console.log(response.data)
+            return response
+        }
+        catch(error){
+            return error.response
+        }
+
     }
 
 
