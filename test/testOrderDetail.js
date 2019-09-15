@@ -26,14 +26,12 @@ function checkGetOrderDetail(responseBody, expectedStatusCode, orderId, expected
 		responseBody.data.status.should.equal(expectedOrderStatus)
 		responseBody.data.should.have.property('orderDateTime')
 		responseBody.data.should.have.property('createdTime')
-		console.log('pass 200')
 	}
 	else if(responseBody.status === 404)
 		{	
 			responseBody.status.should.equal(expectedStatusCode)
 			responseBody.data.should.have.property('message')
 			responseBody.data.message.should.equal('ORDER_NOT_FOUND')
-			console.log('pass 404')
 		}
 	else{
 		console.log('invalid')
@@ -65,14 +63,12 @@ describe('/get orderDetail', function(){
 
 	it('1: get ASSIGNING order detail', async function(){
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		console.log('orderInfo: '+ orderInfo.data.id)
 		checkGetOrderDetail(orderInfo, 200, orderId, 'ASSIGNING')
 	})
 
 	it('2: get ONGOING order detail', async function(){
 		await allAPIsFunctions.driverTakeOrder(orderId)
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		console.log('orderInfo: '+ orderInfo.data.id)
 		checkGetOrderDetail(orderInfo, 200,orderId, 'ONGOING')
 
 	})
@@ -81,7 +77,6 @@ describe('/get orderDetail', function(){
 		await allAPIsFunctions.driverTakeOrder(orderId)
 		await allAPIsFunctions.driverCompleteOrder(orderId)
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		console.log('orderInfo: '+ orderInfo.data.id)
 		checkGetOrderDetail(orderInfo, 200, orderId, 'COMPLETED')
 
 	})
@@ -89,7 +84,6 @@ describe('/get orderDetail', function(){
 	it('4: get ASSIGNING > CANCELLED order detail', async function(){
 		await allAPIsFunctions.cancelOrder(orderId)
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		console.log('orderInfo: '+ orderInfo.data.id)
 		checkGetOrderDetail(orderInfo, 200, orderId, 'CANCELLED')
 
 	})
@@ -98,7 +92,6 @@ describe('/get orderDetail', function(){
 		await allAPIsFunctions.driverTakeOrder(orderId)
 		await allAPIsFunctions.cancelOrder(orderId)
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		console.log('orderInfo: '+ orderInfo.data.id)
 		checkGetOrderDetail(orderInfo, 200, orderId, 'CANCELLED')
 
 	})

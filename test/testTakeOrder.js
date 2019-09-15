@@ -19,7 +19,6 @@ function checkResponse(responseBody, expectedStatusCode, expectedOrderStatus){
 			responseBody.status.should.equal(expectedStatusCode)
 			responseBody.data.status.should.equal(expectedOrderStatus)
 			responseBody.data.should.have.property('ongoingTime')
-			console.log('pass 200')
 
 		}
 		else if(responseBody.status === 422)
@@ -27,14 +26,12 @@ function checkResponse(responseBody, expectedStatusCode, expectedOrderStatus){
 			responseBody.status.should.equal(expectedStatusCode)
 			responseBody.data.should.have.property('message')
 			responseBody.data.message.should.equal('Order status is not ASSIGNING')
-			console.log('pass 422')
 		}
 		else if(responseBody.status === 404)
 		{	
 			responseBody.status.should.equal(expectedStatusCode)
 			responseBody.data.should.have.property('message')
 			responseBody.data.message.should.equal('ORDER_NOT_FOUND')
-			console.log('pass 404')
 		}
 		else{
 			console.log('invalid')
@@ -68,13 +65,11 @@ describe('Put /takeOrder', function(){
 
 	it('1: take normal order', async function(){
 		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
-		console.log(takeOrder.status, takeOrder.data)
 		checkResponse(takeOrder, 200, 'ONGOING')
 	})
 
 	it('2: test non-existing order id', async function(){
 		let takeOrder = await allAPIsFunctions.driverTakeOrder('9999999')				//Assume that order Id 9999999 isn't exists
-		console.log(takeOrder.status, takeOrder.data)
 		checkResponse(takeOrder, 404)
 	})
 
@@ -82,8 +77,6 @@ describe('Put /takeOrder', function(){
 		let takeOrder = await allAPIsFunctions.driverTakeOrder('abc')
 		takeOrder.status.should.equal(404)
 		takeOrder.data.should.equal('404 page not found\n')
-		//checkResponse(takeOrder, 404)
-		//404 page not found\n
 	})
 
 	it('4: take order which is already taken', async function(){

@@ -17,7 +17,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
 	it('1: Schedule order for next day', async function(){
 
 		let orderAt = moment.utc(today).add(1, 'day')
-		//console.log(orderAt)
 		let stops =  [
         		{
             		"lat": 22.344674, "lng": 114.124651
@@ -30,7 +29,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
     	if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -57,7 +55,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
     	if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -83,7 +80,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
     	if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -110,7 +106,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
        if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -135,7 +130,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-    	console.log(response.status, response.statusText, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -159,7 +153,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -181,7 +174,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -203,7 +195,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -217,7 +208,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
     it('9: check price more than 2 km during  5:00:00- 21:59:59, 3 stops.', async function(){
         let date = '2019-10-10T22:00:00.000Z'      
         let orderAt = moment.utc(date)
-        //console.log('orderAt: '+orderAt)
         let stops =  [                               //total ~3.5km
                 {
                     "lat": 22.276148, "lng": 114.172160
@@ -230,7 +220,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -253,7 +242,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -276,7 +264,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -299,7 +286,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             
@@ -325,7 +311,6 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        console.log(response.status, response.data)
         if (response.status === 201){
             calculationFunctions.checkResponse201(response, 201)
             calculationFunctions.checkDistanceAndPrice(response, orderAt)             

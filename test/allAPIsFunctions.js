@@ -15,10 +15,6 @@ let locations =  [
         }
     ]
 const placeOrderUrl = config.APIList.baseURL + config.APIList.placeOrder
-//let orderDetailsUrl = config.APIList.baseURL + config.APIList.orderDetails(orderId)
-//let takeOrderUrl = config.APIList.baseURL + config.APIList.takeOrder(orderId)
-//let completeOrderUrl= config.APIList.baseURL + config.APIList.completeOrder(orderId)
-//let cancelOrderUrl = config.APIList.baseURL + config.APIList.cancelOrder(orderId)
 
 module.exports = {
     //place order API
@@ -51,11 +47,9 @@ module.exports = {
         try{
             
             let response = await axios.get(orderDetailsUrl)
-            //console.log(response)
             return response
         }
         catch(error){
-            console.log(error.response)
             return error.response
         }
     },
@@ -64,7 +58,6 @@ module.exports = {
     driverTakeOrder: async function (orderId){
         let takeOrderUrl = config.APIList.baseURL + config.APIList.takeOrder(orderId)
         try{
-            console.log(takeOrderUrl)
             let response = await axios.put(takeOrderUrl)
             return response
         }
@@ -89,7 +82,6 @@ module.exports = {
         let cancelOrderUrl = config.APIList.baseURL + config.APIList.cancelOrder(orderId)
         try{
             let response = await axios.put(cancelOrderUrl)
-            console.log(response.data)
             return response
         }
         catch(error){

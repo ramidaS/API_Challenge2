@@ -21,7 +21,6 @@ function checkCompleteOrder(responseBody, orderId, expectedStatusCode, expectedO
 			responseBody.data.should.have.property('completedAt')
 			responseBody.data.should.have.property('id')
 			responseBody.data.id.should.equal(orderId)
-			console.log('pass 200')
 
 		}
 		else if(responseBody.status === 422)
@@ -29,13 +28,11 @@ function checkCompleteOrder(responseBody, orderId, expectedStatusCode, expectedO
 			responseBody.status.should.equal(expectedStatusCode)
 			responseBody.data.should.have.property('message')
 			responseBody.data.message.should.equal('Order status is not ONGOING')
-			console.log('pass 422')
 		}
 		else if(responseBody.status === 404)
 		{	
 			responseBody.status.should.equal(expectedStatusCode)
 			responseBody.data.should.equal('404 page not found\n')
-			console.log('pass 404')
 		}
 		else{
 			console.log('invalid')

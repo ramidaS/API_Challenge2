@@ -21,7 +21,6 @@ function checkCancelledOrder(responseBody, orderId, expectedStatusCode, expected
 			responseBody.data.should.have.property('cancelledAt')
 			responseBody.data.should.have.property('id')
 			responseBody.data.id.should.equal(orderId)
-			console.log('pass 200')
 
 		}
 		else if(responseBody.status === 422)
@@ -29,14 +28,12 @@ function checkCancelledOrder(responseBody, orderId, expectedStatusCode, expected
 			responseBody.status.should.equal(expectedStatusCode)
 			responseBody.data.should.have.property('message')
 			responseBody.data.message.should.equal('Order status is COMPLETED already')
-			console.log('pass 422')
 		}
 		else if(responseBody.status === 404)
 		{	
 			responseBody.status.should.equal(expectedStatusCode)
 			responseBody.data.should.have.property('message')
 			responseBody.data.message.should.equal('ORDER_NOT_FOUND')
-			console.log('pass 404')
 		}
 		else{
 			console.log('invalid')

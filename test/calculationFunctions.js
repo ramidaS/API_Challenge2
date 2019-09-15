@@ -23,7 +23,6 @@ let response = allAPIsFunctions.scheduleOrder(scheduledTime,locations)
 	function totalDistanceCalculation(distance){
 	    
 	    totalDistance = distance.reduce(function(a, b) { return a + b; }, 0)
-	    console.log(totalDistance)
 
 	    return totalDistance
 	}
@@ -43,7 +42,6 @@ let response = allAPIsFunctions.scheduleOrder(scheduledTime,locations)
 	    if(timeStamp.hour() >= 5 && timeStamp.hour() < 22)			//5am - 10pm
 	    	{
 	    		h = timeStamp.hour()
-	    		console.log(h)
 	    		console.log('Order time is during 5:00:00 am to 10:00:00 pm')
 	    		extraDistance = totalDistance-standardDistance
 	    		extraCharge = (extraDistance/200)*5
@@ -106,16 +104,10 @@ module.exports = {
 	    if (orderAt === null || orderAt === undefined){
 	    	let responseTime = responseBody.headers.date
 	    	timeStamp = moment.utc(responseTime)
-	    	console.log('timeStamp: '+timeStamp)
-	    	console.log('orderAt is null or undefined')
 	    }else if(orderAt !== undefined){
 	    	timeStamp = moment.utc(orderAt)
-	    	console.log('timeStamp: '+timeStamp)
-	    	console.log('valid orderAt')
 	    }else{
-	    	console.log('Invalid orderAt')
-	    	//console.log('timeStamp: '+timeStamp)
-	    	console.log(orderAt)
+	    	console.log('Invalid order time')
 	    }
 	    let distances = responseBody.data.drivingDistancesInMeters
 	    let totalDistances = totalDistanceCalculation(distances)
