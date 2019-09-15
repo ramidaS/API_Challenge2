@@ -55,8 +55,8 @@ module.exports = {
             return response
         }
         catch(error){
-            console.log(error.response.status)
-            return error.reponse
+            console.log(error.response)
+            return error.response
         }
     },
 

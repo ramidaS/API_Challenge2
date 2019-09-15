@@ -31,7 +31,8 @@ function checkGetOrderDetail(responseBody, expectedStatusCode, orderId, expected
 	else if(responseBody.status === 404)
 		{	
 			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.should.equal('404 page not found\n')
+			responseBody.data.should.have.property('message')
+			responseBody.data.message.should.equal('ORDER_NOT_FOUND')
 			console.log('pass 404')
 		}
 	else{
@@ -69,45 +70,47 @@ describe('/get orderDetail', function(){
 	})
 
 	it('2: get ONGOING order detail', async function(){
-		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
+		await allAPIsFunctions.driverTakeOrder(orderId)
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
 		console.log('orderInfo: '+ orderInfo.data.id)
-		checkGetOrderDetail(orderInfo, 200,orderId, takeOrder.data.status)
+		checkGetOrderDetail(orderInfo, 200,orderId, 'ONGOING')
 
 	})
 
 	it('3: get COMPLETED order detail', async function(){
-		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
-		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
-		console.log(completeOrder.data.status)
+		await allAPIsFunctions.driverTakeOrder(orderId)
+		await allAPIsFunctions.driverCompleteOrder(orderId)
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
 		console.log('orderInfo: '+ orderInfo.data.id)
-		checkGetOrderDetail(orderInfo, 200, orderId, completeOrder.data.status)
+		checkGetOrderDetail(orderInfo, 200, orderId, 'COMPLETED')
 
 	})
 
 	it('4: get ASSIGNING > CANCELLED order detail', async function(){
-		let cancelOrder = await allAPIsFunctions.cancelOrder(orderId)
-		console.log(cancelOrder.data.status)
+		await allAPIsFunctions.cancelOrder(orderId)
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
 		console.log('orderInfo: '+ orderInfo.data.id)
-		checkGetOrderDetail(orderInfo, 200, orderId, cancelOrder.data.status)
+		checkGetOrderDetail(orderInfo, 200, orderId, 'CANCELLED')
 
 	})
 
 	it('5: get ONGOING > CANCELLED order detail', async function(){
-		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
-		let cancelOrder = await allAPIsFunctions.cancelOrder(orderId)
-		console.log(cancelOrder.data.status)
+		await allAPIsFunctions.driverTakeOrder(orderId)
+		await allAPIsFunctions.cancelOrder(orderId)
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
 		console.log('orderInfo: '+ orderInfo.data.id)
-		checkGetOrderDetail(orderInfo, 200, orderId, cancelOrder.data.status)
+		checkGetOrderDetail(orderInfo, 200, orderId, 'CANCELLED')
 
 	})
 
-	it('6: get invalid order detail', async function(){
-		let invalidOrderinfo = await allAPIsFunctions.getOrderDetails('abc')
-		console.log(invalidOrderinfo)
+	it('6: get non exisiting order detail', async function(){
+		let invalidOrderinfo = await allAPIsFunctions.getOrderDetails('9999999')			//Assume that order Id 9999999 isn't exists.
 		checkGetOrderDetail(invalidOrderinfo, 404)
+	})
+
+	it('7: get invalid order detail', async function(){
+		let invalidOrderinfo = await allAPIsFunctions.getOrderDetails('abc')			//Assume that order Id 9999999 isn't exists.
+		invalidOrderinfo.status.should.equal(404)
+		invalidOrderinfo.data.should.equal('404 page not found\n')
 	})
 })

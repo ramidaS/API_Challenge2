@@ -32,7 +32,8 @@ function checkResponse(responseBody, expectedStatusCode, expectedOrderStatus){
 		else if(responseBody.status === 404)
 		{	
 			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.should.equal('404 page not found\n')
+			responseBody.data.should.have.property('message')
+			responseBody.data.message.should.equal('ORDER_NOT_FOUND')
 			console.log('pass 404')
 		}
 		else{
@@ -71,26 +72,34 @@ describe('Put /takeOrder', function(){
 		checkResponse(takeOrder, 200, 'ONGOING')
 	})
 
-	it.only('2: take invalid order id', async function(){
-		orderId = 'abc'
-		let takeOrder = await allAPIsFunctions.driverTakeOrder(orderId)
+	it('2: test non-existing order id', async function(){
+		let takeOrder = await allAPIsFunctions.driverTakeOrder('9999999')				//Assume that order Id 9999999 isn't exists
+		console.log(takeOrder.status, takeOrder.data)
 		checkResponse(takeOrder, 404)
 	})
 
-	it('3: take order which is already taken', async function(){
+	it('3: take invalid order id', async function(){
+		let takeOrder = await allAPIsFunctions.driverTakeOrder('abc')
+		takeOrder.status.should.equal(404)
+		takeOrder.data.should.equal('404 page not found\n')
+		//checkResponse(takeOrder, 404)
+		//404 page not found\n
+	})
+
+	it('4: take order which is already taken', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
 		checkResponse(takeOrder2, 422)
 	})
 
-	it('4: take order which is already completed.', async function(){
+	it('5: take order which is already completed.', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)
 		checkResponse(takeOrder2, 422)
 	})
 
-	it('5: take order which is already cancelled.', async function(){
+	it('6: take order which is already cancelled.', async function(){
 		let takeOrder1 = await allAPIsFunctions.driverTakeOrder(orderId)
 		let cancelOrder = await allAPIsFunctions.cancelOrder(orderId)
 		let takeOrder2 = await allAPIsFunctions.driverTakeOrder(orderId)

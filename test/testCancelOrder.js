@@ -104,6 +104,4 @@ describe('/Put cancelOrder', function(){
 		let cancelledOrder = await allAPIsFunctions.cancelOrder(9999999)
 		checkCancelledOrder(cancelledOrder, orderId, 404)
 	})
-
-
 })
