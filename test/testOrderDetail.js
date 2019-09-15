@@ -56,6 +56,7 @@ describe('/get orderDetail', function(){
 	        "lat": 22.385669, "lng": 114.186962
 	    }
 	]
+
 	beforeEach(async function(){
 		let response = await allAPIsFunctions.scheduleOrder(orderAt,locations)
 		orderId = response.data.id
@@ -66,7 +67,6 @@ describe('/get orderDetail', function(){
 		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
 		console.log('orderInfo: '+ orderInfo.data.id)
 		checkGetOrderDetail(orderInfo, 200, orderId, 'ASSIGNING')
-
 	})
 
 	it('2: get ONGOING order detail', async function(){

@@ -27,7 +27,7 @@ describe('/Post placeOrderUrl', function() {
     		]
         	let response = await allAPIsFunctions.placeOrder(stops)
             if (response.status === 201){
-                calculationFunctions.checkResponse200(response, 201)
+                calculationFunctions.checkResponse201(response, 201)
                 calculationFunctions.checkDistanceAndPrice(response)             
             }
             else{
@@ -46,7 +46,7 @@ describe('/Post placeOrderUrl', function() {
                 }]
             let response = await allAPIsFunctions.placeOrder(stops)
             if (response.status === 201){
-                calculationFunctions.checkResponse200(response, 201)
+                calculationFunctions.checkResponse201(response, 201)
                 calculationFunctions.checkDistanceAndPrice(response)             
             }
             else{
@@ -72,7 +72,7 @@ describe('/Post placeOrderUrl', function() {
             ]
             let response = await allAPIsFunctions.placeOrder(stops)
             if (response.status === 201){
-                calculationFunctions.checkResponse200(response, 201)
+                calculationFunctions.checkResponse201(response, 201)
                 calculationFunctions.checkDistanceAndPrice(response)             
             }
             else{
@@ -95,7 +95,7 @@ describe('/Post placeOrderUrl', function() {
             ]
             let response = await allAPIsFunctions.placeOrder(stops)
             if (response.status === 201){
-                calculationFunctions.checkResponse200(response, 201)
+                calculationFunctions.checkResponse201(response, 201)
                 calculationFunctions.checkDistanceAndPrice(response)             
             }
             else{
@@ -112,7 +112,7 @@ describe('/Post placeOrderUrl', function() {
     		]
         	let response = await allAPIsFunctions.placeOrder(stops)
             if (response.status === 201){
-                    calculationFunctions.checkResponse200(response, 201)
+                    calculationFunctions.checkResponse201(response, 201)
                     calculationFunctions.checkDistanceAndPrice(response)             
                 }
             else{
@@ -135,7 +135,7 @@ describe('/Post placeOrderUrl', function() {
     		]
             let response = await allAPIsFunctions.placeOrder(stops)
             if (response.status === 201){
-                    calculationFunctions.checkResponse200(response, 201)
+                    calculationFunctions.checkResponse201(response, 201)
                     calculationFunctions.checkDistanceAndPrice(response)             
                 }
             else{
@@ -156,7 +156,7 @@ describe('/Post placeOrderUrl', function() {
                 ]
             let response = await allAPIsFunctions.placeOrder(stops)
             if (response.status === 201){
-                    calculationFunctions.checkResponse200(response, 201)
+                    calculationFunctions.checkResponse201(response, 201)
                     calculationFunctions.checkDistanceAndPrice(response)             
                 }
             else{
