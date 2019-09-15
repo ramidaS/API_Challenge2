@@ -2,6 +2,10 @@ const axios = require("axios")
 const config = require("./config")
 const allAPIsFunctions = require('./allAPIsFunctions')
 var moment = require('moment')
+var chai = require('chai'),
+expect = chai.expect,
+should = chai.should;
+chai.use(require('chai-json-schema'));
 moment().format();
 
 
@@ -17,6 +21,28 @@ let locations = [
         "lat": 22.385669, "lng": 114.186962
     }
 ]
+
+var responseSuccessSchema = {
+	title: 'place order success schema',
+		type: 'object',
+		required: ['id', 'drivingDistancesInMeters', 'fare'],
+		properties: { 
+			drivingDistancesInMeters: {
+				type: 'array',
+				uniqueItems: false,
+				items: {
+					type: 'number'
+				}
+			},
+			fare:{
+				type:'object'
+			}}}
+
+var responseFailSchema = {
+	title: 'place order failed schema',
+	type: 'object',
+	required: ['message']
+	}
 
 let response = allAPIsFunctions.scheduleOrder(scheduledTime,locations)
 
@@ -42,14 +68,12 @@ let response = allAPIsFunctions.scheduleOrder(scheduledTime,locations)
 	    if(timeStamp.hour() >= 5 && timeStamp.hour() < 22)			//5am - 10pm
 	    	{
 	    		h = timeStamp.hour()
-	    		console.log('Order time is during 5:00:00 am to 10:00:00 pm')
 	    		extraDistance = totalDistance-standardDistance
 	    		extraCharge = (extraDistance/200)*5
 	    		totalPrice = minPriceDay + parseFloat(extraCharge.toFixed(2))
 	    		totalPrice = totalPrice.toFixed(2)
 	    	}
 	    	else if(timeStamp.hour() < 5 || (timeStamp.hour() >= 22 && timeStamp.minute() >= 0 && timeStamp.seconds() >= 0)){		//22:01-04:59
-	    		console.log('Order time is during 10.01:00 pm - 4:59:59 am')
 	    		extraDistance = totalDistance-standardDistance
 	    		extraCharge = (extraDistance/200)*8
 	    		totalPrice = minPriceNight + parseFloat(extraCharge.toFixed(2))
@@ -78,50 +102,38 @@ let response = allAPIsFunctions.scheduleOrder(scheduledTime,locations)
 
 module.exports = {
 
-	checkResponse201: function (responseBody, expectedStatus){
-	    
-	    responseBody.status.should.equal(expectedStatus)
-	    responseBody.data.should.have.property('id')
-	    responseBody.data.should.have.property('drivingDistancesInMeters')
-	    responseBody.data.should.have.property('fare')
-	    responseBody.data.fare.should.have.property('amount')
-	    responseBody.data.fare.should.have.property('currency')
-	    return
-	},
-
-	checkOtherResponse: function (responseBody, expectedStatus, errorMessage){
-	    responseBody.status.should.equal(expectedStatus)
-	    responseBody.data.should.have.property('message')
-	    responseBody.data.message.should.equal(errorMessage)
-	    return
-	},
-
-	checkDistanceAndPrice: function (responseBody, orderAt){
-	    let drivingDistance = responseBody.data.drivingDistancesInMeters.reduce(function(a, b) { return a + b; }, 0)
-	    let fareAmount = responseBody.data.fare.amount
-	    let currency = responseBody.data.fare.currency
-	    let timeStamp = 0
-	    if (orderAt === null || orderAt === undefined){
-	    	let responseTime = responseBody.headers.date
-	    	timeStamp = moment.utc(responseTime)
-	    }else if(orderAt !== undefined){
-	    	timeStamp = moment.utc(orderAt)
-	    }else{
-	    	console.log('Invalid order time')
-	    }
-	    let distances = responseBody.data.drivingDistancesInMeters
-	    let totalDistances = totalDistanceCalculation(distances)
-	    let totalPrice = priceCalculation(totalDistance, timeStamp)
-	    
-	    currency.should.equal('HKD')
-	    drivingDistance.should.equal(totalDistance)
-	    fareAmount.should.equal(totalPrice)
-	    console.log('totalDistance: '+totalDistance+' and totalPrice: '+totalPrice)
-	    return totalPrice, totalDistance
-
+	checkPlaceOrderResponse: function (responseBody, expectedStatus, errorMessage, orderAt){
+		if(responseBody.status === 201){
+			let drivingDistance = responseBody.data.drivingDistancesInMeters.reduce(function(a, b) { return a + b; }, 0)
+		    let fareAmount = responseBody.data.fare.amount
+		    let currency = responseBody.data.fare.currency
+		    let timeStamp = 0
+		    if (orderAt === null || orderAt === undefined){
+		    	let responseTime = responseBody.headers.date
+		    	timeStamp = moment.utc(responseTime)
+		    }else if(orderAt !== undefined){
+		    	timeStamp = moment.utc(orderAt)
+		    }else{
+		    	console.log('Invalid order time')
+		    }
+		    let distances = responseBody.data.drivingDistancesInMeters
+		    let totalDistances = totalDistanceCalculation(distances)
+		    let totalPrice = priceCalculation(totalDistance, timeStamp)
+		    currency.should.equal('HKD')
+		    drivingDistance.should.equal(totalDistance)
+		    fareAmount.should.equal(totalPrice)
+		    expect(responseBody.data).to.be.jsonSchema(responseSuccessSchema)
+			responseBody.status.should.equal(expectedStatus)
+		    return				
+		}
+		else{
+			responseBody.status.should.equal(expectedStatus)
+			expect(responseBody.data).to.be.jsonSchema(responseFailSchema)
+		    responseBody.data.message.should.equal(errorMessage)
+		    return
+		}
 	}
-
-	}
+}
 
 
 

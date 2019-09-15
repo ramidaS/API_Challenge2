@@ -1,6 +1,7 @@
 const axios = require('axios')
 const config = require('./config')
 const allAPIsFunctions = require('./allAPIsFunctions')
+var checkResponse = require('./checkResponse')
 var chai = require('chai')
     , chaiHttp = require('chai-http')
 var expect = require('expect')
@@ -9,37 +10,6 @@ chai.use(chaiHttp)
 const calculationFunctions = require('./calculationFunctions')
 var moment = require('moment')
 moment().format();
-
-let responseBody = []
-let expectedStatusCode = 200
-let expectedOrderStatus = 'CANCELLED'
-
-function checkCancelledOrder(responseBody, orderId, expectedStatusCode, expectedOrderStatus){
-		if(responseBody.status === 200){
-			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.status.should.equal(expectedOrderStatus)
-			responseBody.data.should.have.property('cancelledAt')
-			responseBody.data.should.have.property('id')
-			responseBody.data.id.should.equal(orderId)
-
-		}
-		else if(responseBody.status === 422)
-		{
-			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.should.have.property('message')
-			responseBody.data.message.should.equal('Order status is COMPLETED already')
-		}
-		else if(responseBody.status === 404)
-		{	
-			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.should.have.property('message')
-			responseBody.data.message.should.equal('ORDER_NOT_FOUND')
-		}
-		else{
-			console.log('invalid')
-		}
-
-	}
 
 describe('/Put cancelOrder', function(){
 
@@ -65,40 +35,40 @@ describe('/Put cancelOrder', function(){
 		return response, orderId
 	})
 
-	it('1: Cancel ASSIGNING order', async function(){
+	it('1: should return HTTP 200 and ASSIGNING order should be cancelled successfully for normal flow.', async function(){
 		let cancelledOrder = await allAPIsFunctions.cancelOrder(orderId)
-		checkCancelledOrder(cancelledOrder, orderId, 200, 'CANCELLED')
+		checkResponse.checkCancelledOrder(cancelledOrder, orderId, 200, 'CANCELLED')
 
 	})
 
-	it('2: Cancel ONGOING order', async function(){
+	it('2: should return HTTP 200 and ONGOING order should be cancelled successfully for normal flow.', async function(){
 		await allAPIsFunctions.driverTakeOrder(orderId)
 		let cancelledOrder = await allAPIsFunctions.cancelOrder(orderId)
-		checkCancelledOrder(cancelledOrder, orderId, 200, 'CANCELLED')
+		checkResponse.checkCancelledOrder(cancelledOrder, orderId, 200, 'CANCELLED')
 	})
 
-	it('3: Cancel COMPLETED order', async function(){
+	it('3: should return HTTP 422 because COMPLETED order could not be cancelled.', async function(){
 		await allAPIsFunctions.driverTakeOrder(orderId)
 		await allAPIsFunctions.driverCompleteOrder(orderId)
 		let cancelledOrder = await allAPIsFunctions.cancelOrder(orderId)
-		checkCancelledOrder(cancelledOrder, orderId, 422)
+		checkResponse.checkCancelledOrder(cancelledOrder, orderId, 422)
 	})
 
-	it('4: Cancel cancelled order', async function(){				//This case is expected to be passed as result checked in Postman
+	it('4: should return HTTP 200 and CANCELLED order status should not be changed.', async function(){				//This case is expected to be passed as result checked in Postman
 		await allAPIsFunctions.driverTakeOrder(orderId)
 		await allAPIsFunctions.cancelOrder(orderId)
 		let cancelledOrder = await allAPIsFunctions.cancelOrder(orderId)
-		checkCancelledOrder(cancelledOrder, orderId, 200, 'CANCELLED')
+		checkResponse.checkCancelledOrder(cancelledOrder, orderId, 200, 'CANCELLED')
 	})				
 
-	it('5: Cancel invalid order', async function(){
+	it('5: should return HTTP 404 because invalid orderId format', async function(){
 		let cancelledOrder = await allAPIsFunctions.cancelOrder('abc')
 		cancelledOrder.status.should.equal(404)
 		cancelledOrder.data.should.equal('404 page not found\n')
 	})
 
-	it('6: Cancel non-existing order', async function(){			//Assume that orderId = 9999999 is not exists
+	it('6: should return HTTP 404 because cancelling non-existing order', async function(){			//Assume that orderId = 9999999 is not exists
 		let cancelledOrder = await allAPIsFunctions.cancelOrder(9999999)
-		checkCancelledOrder(cancelledOrder, orderId, 404)
+		checkResponse.checkCancelledOrder(cancelledOrder, orderId, 404)
 	})
 })

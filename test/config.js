@@ -1,8 +1,6 @@
 var moment = require('moment');
-
+var LintStream = require('jslint').LintStream;
 module.exports = {
-	//timezone = 
-	//moment().utcOffset()
 
 	APIList: {
 		baseURL: 'http://localhost:51544',
@@ -12,4 +10,4 @@ module.exports = {
 		completeOrder: (orderID) => `/v1/orders/${orderID}/complete`,
 		cancelOrder: (orderID) => `/v1/orders/${orderID}/cancel`
 	}
-};
+}

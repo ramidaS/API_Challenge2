@@ -1,6 +1,7 @@
 const axios = require('axios')
 const config = require('./config')
 const allAPIsFunctions = require('./allAPIsFunctions')
+var checkResponse = require('./checkResponse')
 var chai = require('chai')
     , chaiHttp = require('chai-http')
 var expect = require('expect')
@@ -10,35 +11,6 @@ const calculationFunctions = require('./calculationFunctions')
 var moment = require('moment')
 moment().format();
 
-let responseBody = []
-let expectedStatusCode = 200
-let expectedOrderStatus = 'ONGOING'
-
-function checkCompleteOrder(responseBody, orderId, expectedStatusCode, expectedOrderStatus){
-		if(responseBody.status === 200){
-			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.status.should.equal(expectedOrderStatus)
-			responseBody.data.should.have.property('completedAt')
-			responseBody.data.should.have.property('id')
-			responseBody.data.id.should.equal(orderId)
-
-		}
-		else if(responseBody.status === 422)
-		{
-			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.should.have.property('message')
-			responseBody.data.message.should.equal('Order status is not ONGOING')
-		}
-		else if(responseBody.status === 404)
-		{	
-			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.should.equal('404 page not found\n')
-		}
-		else{
-			console.log('invalid')
-		}
-
-	}
 
 describe('/Put completeOrder', function(){
 
@@ -65,34 +37,40 @@ describe('/Put completeOrder', function(){
 	})
 
 
-	it('1: complete normal order', async function(){
+	it('1: should return HTTP 200 and complete ONGOING order successfully for normal flow.', async function(){
 		await allAPIsFunctions.driverTakeOrder(orderId)
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
-		checkCompleteOrder(completeOrder,orderId,200,'COMPLETED')
+		checkResponse.checkCompleteOrder(completeOrder,orderId,200,'COMPLETED')
 
 	})
 
-	it('2: complete an assigning order', async function(){
+	it('2: should return HTTP 422 because ASSIGNING order could not be completed.', async function(){
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
-		checkCompleteOrder(completeOrder,orderId,422)
+		checkResponse.checkCompleteOrder(completeOrder,orderId,422)
 
 	})
 
-	it('3: complete cancelled order', async function(){
+	it('3: should return HTTP 422 because CANCELLED order could not be completed.', async function(){
 		await allAPIsFunctions.cancelOrder(orderId)
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
-		checkCompleteOrder(completeOrder,orderId,422)
+		checkResponse.checkCompleteOrder(completeOrder,orderId,422)
 	})
 
-	it('4: complete completed order', async function(){
+	it('4: should return HTTP 422 because the order was completed already.', async function(){
 		await allAPIsFunctions.driverCompleteOrder(orderId)
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder(orderId)
-		checkCompleteOrder(completeOrder,orderId,422)
+		checkResponse.checkCompleteOrder(completeOrder,orderId,422)
 	})
 
-	it('5: complete invalid order', async function(){
+	it('5: should return HTTP 404 because orderId format is invalid.', async function(){
 		let completeOrder = await allAPIsFunctions.driverCompleteOrder('abc')
-		checkCompleteOrder(completeOrder,orderId,404)
+		completeOrder.status.should.equal(404)
+		completeOrder.data.should.equal('404 page not found\n')
+	})
+
+	it('6: should return HTTP 404 because orderId is not valid', async function(){
+		let completeOrder = await allAPIsFunctions.driverCompleteOrder('9999999')			//assume that orderId '9999999' isn't valid
+		checkResponse.checkCompleteOrder(completeOrder,orderId,404)
 	})
 
 })

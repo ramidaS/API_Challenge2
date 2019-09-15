@@ -14,7 +14,7 @@ var today = new Date()
 
 describe('/Post placeOrderUrl WITH orderAt value', function() {
 
-	it('1: Schedule order for next day', async function(){
+	it('1: Should return HTTP 201 and created order with Schedule for next day.', async function(){
 
 		let orderAt = moment.utc(today).add(1, 'day')
 		let stops =  [
@@ -29,17 +29,11 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-    	if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'Invalid')
-        }
+        calculationFunctions.checkPlaceOrderResponse(response, 201, '', orderAt)            
 	})
 
 	
-	it('2: Schedule order for next hour', async function(){
+	it('2: Should return HTTP 201 and created order for next hour.', async function(){
 
 		let orderAt = moment.utc(today).add(1, 'hour')
         let convertTime = moment(orderAt).format()
@@ -55,17 +49,11 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-    	if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'Invalid')
-        }
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
 	})
 
 	
-	it('3: Schedule order current date time. Expected 400', async function(){
+	it('3: Should return HTTP 400 because creating order with a bit passed date time. Expected 400', async function(){
 
 		let orderAt = moment.utc(today)
 		let stops =  [
@@ -80,18 +68,11 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-    	if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is behind the present time')
-        }
-        
+        calculationFunctions.checkPlaceOrderResponse(response, 400, 'field orderAt is behind the present time', orderAt)
 	})
 
 	
-	it('4: Schedule order but orderAt is null.', async function(){
+	it('4: Should return HTTP 201 and created order successfully even orderAt is null.', async function(){
 
 		let orderAt = null
 		let stops =  [
@@ -106,17 +87,11 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-       if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'Invalid')
-        }
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
 	})
 
 	
-	it('5: Schedule order but orderAt is empty string', async function(){
+	it('5: Should return HTTP 400 because orderAt is empty string. (Failed by intention because no error message handled.)', async function(){
 		let orderAt = ''
 		let stops =  [
         		{
@@ -130,21 +105,15 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
         		}
     		]
     	let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
+        calculationFunctions.checkPlaceOrderResponse(response, 400, 'field orderAt is empty', orderAt)
     	//Failed by intention because API returned message as empty string. Actually API should have error message to display.
 	})
 
     
-    it('6: Check price more than 2 km during 5:00:00- 21:59:59, 2 stops.', async function(){
+    it('6: Should return HTTP 201 and standard price rate for 05:00:00 to 21:59:59, $20 because the distance is less than 2 Km.', async function(){
         let date = '2019-10-10T05:00:00.000Z'      
         let orderAt = moment.utc(date)
-        let stops =  [                               // 1.5km
+        let stops =  [                               
                 {
                     "lat": 22.276148, "lng": 114.172160
                 },
@@ -153,16 +122,10 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
     })
 
-    it('7: check price with total distance = 2km during 5:00:00- 21:59:59', async function(){
+    it('7: Should return HTTP 201 and price rate for 05:00:00 to 21:59:59, total distance is a bit more than 2km.', async function(){
         let date = '2019-10-10T21:00:00.000Z'      
         let orderAt = moment.utc(date)
         let stops =  [                               // 2km
@@ -174,16 +137,10 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
     })
     
-    it('8: Check price with total distance > 2 km during 5:00:00- 21:59:59', async function(){
+    it('8: Should return HTTP 201 and price rate for 05:00:00 to 21:59:59, total distance > 2 km, 2 stops.', async function(){
         let date = '2019-10-10T21:59:59.000Z'      
         let orderAt = moment.utc(date)
         let stops =  [                               // ~21km
@@ -195,17 +152,10 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
-
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
     } )
 
-    it('9: check price more than 2 km during  5:00:00- 21:59:59, 3 stops.', async function(){
+    it('9: Should return HTTP 201 and price rate for 05:00:00 to 21:59:59, total distance > 2 km, 3 stops.', async function(){
         let date = '2019-10-10T22:00:00.000Z'      
         let orderAt = moment.utc(date)
         let stops =  [                               //total ~3.5km
@@ -220,17 +170,10 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
-
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
     } )
 
-    it('10: Check price with in 2 km during 22:00:00 - 4:59:59, 2 stops', async function(){
+    it('10: Should return HTTP 201 and standard price rate for 22:00:00 - 04:59:59, $30 because distance < 2 km, 2 stops', async function(){
         let date = '2019-10-10T04:59:00.000Z'      
         let orderAt = moment.utc(date)
         let stops =  [                               // 1.5km
@@ -242,17 +185,10 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
-
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
     })
 
-    it('11: Check price with total distance = 2 km during 22:00:00 - 4:59:59', async function(){
+    it('11: Should return HTTP 201 and price rate for 22:00:00 - 04:59:59, total distance is a bit more than 2 km, 2 stops', async function(){
         let date = '2019-10-10T22:00:01.000Z'      
         let orderAt = moment.utc(date)
         let stops =  [                               // 2km
@@ -264,17 +200,11 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
+    calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
 
     })
 
-    it('12: Check price more than 2 km during 22:00:00 - 4:59:59, 2 stops', async function(){
+    it('12: Should return HTTP 201 and price rate for 22:00:00 - 04:59:59, total distance > 2 km, 2 stops.', async function(){
         let date = '2019-10-10T04:59:59.000Z'      
         let orderAt = moment.utc(date)
         let stops =  [                               // ~21km
@@ -286,17 +216,10 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
-
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
     })
 
-    it('13: Check price more than 2 km during 5:00:01 am - 9:59:59 pm, 3 stops ', async function(){
+    it('13: Should return HTTP 201 and price rate for 22:00:00 - 04:59:59, total distance > 2 km, 3 stops.', async function(){
         let date = '2019-10-10T01:50:30.000Z'      
         let orderAt = moment.utc(date)
         let stops =  [                               // ~21km
@@ -311,14 +234,7 @@ describe('/Post placeOrderUrl WITH orderAt value', function() {
                 }
         ]
         let response = await allAPIsFunctions.scheduleOrder(orderAt,stops)
-        if (response.status === 201){
-            calculationFunctions.checkResponse201(response, 201)
-            calculationFunctions.checkDistanceAndPrice(response, orderAt)             
-        }
-        else{
-            calculationFunctions.checkOtherResponse(response, 400, 'field orderAt is empty')
-        }
-
+        calculationFunctions.checkPlaceOrderResponse(response, 201,'', orderAt)
     })
 })
 
