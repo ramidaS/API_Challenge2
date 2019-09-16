@@ -9,7 +9,6 @@ var should = chai.should();
 const calculationFunctions = require("./calculationFunctions");
 var moment = require("moment");
 moment().format();
-
 var today = new Date();
 
 describe("/Put cancelOrder", function(){
