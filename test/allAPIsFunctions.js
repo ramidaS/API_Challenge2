@@ -1,26 +1,12 @@
-const axios = require("axios")
-const config = require("./config")
-var LintStream = require('jslint').LintStream;
-let orderId = 20
-let scheduledTime = null
-let orderStatus = 200
-let locations =  [
-        {
-            "lat": 22.344674, "lng": 114.124651
-        },
-        {
-            "lat": 22.375384, "lng": 114.182446
-        },
-        {
-            "lat": 22.385669, "lng": 114.186962
-        }
-    ]
-const placeOrderUrl = config.APIList.baseURL + config.APIList.placeOrder
+const axios = require("axios");
+const config = require("./config");
+
+const placeOrderUrl = config.APIList.baseURL + config.APIList.placeOrder;
 
 module.exports = {
     //place order API
     placeOrder: async function (stops){
-        let response = ''
+        let response = ""
         try{
             response = await axios.post(placeOrderUrl,{"stops": stops})
             return response
@@ -32,7 +18,7 @@ module.exports = {
 
     // Place Order with schedule time API
     scheduleOrder: async function (orderAt, stops){
-            let response = ''
+            let response = ""
             try{
                 response = await axios.post(placeOrderUrl, {"orderAt": orderAt, "stops": stops})
                 return response

@@ -1,192 +1,191 @@
-const axios = require('axios')
-const config = require('./config')
-const allAPIsFunctions = require('./allAPIsFunctions')
-var chai = require('chai'),
-expect = chai.expect,
-should = chai.should;
-chai.use(require('chai-json-schema'));
-chaiHttp = require('chai-http')
-var moment = require('moment')
+const axios = require("axios");
+const config = require("./config");
+const allAPIsFunctions = require("./allAPIsFunctions");
+var chai = require("chai");
+var expect = chai.expect;
+var should = chai.should();
+chai.use(require("chai-json-schema"));
+var chaiHttp = require("chai-http");
+var moment = require("moment");
 moment().format();
 
-var today = new Date()
+var today = new Date();
 
-let responseBody = []
-let expectedStatusCode = 200
-let expectedOrderStatus = 'ASSIGNING'
+var responseBody = [];
+var expectedStatusCode = 200;
+var expectedOrderStatus = "ASSIGNING";
 
 var takeOrderSuccessSchema = {
-	title: 'Take Order success schema',
-	type: 'object',
-	required: ['id', 'status', 'ongoingTime'],
+	title: "Take Order success schema",
+	type: "object",
+	required: ["id", "status", "ongoingTime"],
 	properties: { 
 		status: {
-			type: 'string'
+			type: "string"
 		},
 		ongoingTime:{
-			type:'string'
-		}}}
+			type:"string"
+		}}};
 
 var responseFailSchema = {
-	title: 'Failed schema',
-	type: 'object',
-	required: ['message']
-	}
+	title: "Failed schema",
+	type: "object",
+	required: ["message"]
+	};
 
 var getOrderSuccessSchema = {
-	title: 'Get Order detail success schema',
-	type: 'object',
-	required: ['id', 'stops', 'drivingDistancesInMeters', 'fare', 'status', 'orderDateTime', 'createdTime'],
+	title: "Get Order detail success schema",
+	type: "object",
+	required: ["id", "stops", "drivingDistancesInMeters", "fare", "status", "orderDateTime", "createdTime"],
 	properties:{
 		id: {
-			type: 'number'
+			type: "number"
 		},
 		stops: {
-			type: 'array'
+			type: "array"
 		},
 		drivingDistancesInMeters: {
-			type: 'array'
+			type: "array"
 		},
 		fare: {
-			type: 'object'
+			type: "object"
 		},
 		status: {
-			type: 'string'
+			type: "string"
 		},
 		orderDateTime: {
-			type: 'string'
+			type: "string"
 		},
 		createdTime: {
-			type: 'string'
+			type: "string"
 		}
 	}
-}
+};
 
 var completeOrderSchema = {
-	title: 'Complete Order success schema',
-	type: 'object',
-	required: ['id', 'status', 'completedAt'],
+	title: "Compvare Order success schema",
+	type: "object",
+	required: ["id", "status", "completedAt"],
 	properties:{
 		id:{
-			type: 'number'
+			type: "number"
 		},
 		status:{
-			type: 'string'
+			type: "string"
 		},
-		completedAt:{
-			type: 'string'
+		compvaredAt:{
+			type: "string"
 		}
 	}
-}
+};
 
 var cancelOrderSchema ={
-	title: 'Cancel Order success schema',
-	type: 'object',
-	required: ['id', 'status', 'cancelledAt'],
+	title: "Cancel Order success schema",
+	type: "object",
+	required: ["id", "status", "cancelledAt"],
 	properties:{
 		id:{
-			type: 'number'
+			type: "number"
 		},
 		status:{
-			type: 'string'
+			type: "string"
 		},
 		cancelledAt:{
-			type: 'string'
+			type: "string"
 		}
 	}
-}
+};
 
 
 module.exports = {
 
 	checkTakeOrderResponse: function (responseBody, expectedStatusCode, expectedOrderStatus){
 			if(responseBody.status === 200){
-				responseBody.status.should.equal(expectedStatusCode)
-				expect(responseBody.data).to.be.jsonSchema(takeOrderSuccessSchema)
+				responseBody.status.should.equal(expectedStatusCode);
+				expect(responseBody.data).to.be.jsonSchema(takeOrderSuccessSchema);
 
 			}
 			else if(responseBody.status === 422)
 			{
-				responseBody.status.should.equal(expectedStatusCode)
-				expect(responseBody.data).to.be.jsonSchema(responseFailSchema)
-				responseBody.data.message.should.equal('Order status is not ASSIGNING')
+				responseBody.status.should.equal(expectedStatusCode);
+				expect(responseBody.data).to.be.jsonSchema(responseFailSchema);
+				responseBody.data.message.should.equal("Order status is not ASSIGNING");
 			}
 			else if(responseBody.status === 404)
 			{	
-				responseBody.status.should.equal(expectedStatusCode)
-				expect(responseBody.data).to.be.jsonSchema(responseFailSchema)
-				responseBody.data.message.should.equal('ORDER_NOT_FOUND')
+				responseBody.status.should.equal(expectedStatusCode);
+				expect(responseBody.data).to.be.jsonSchema(responseFailSchema);
+				responseBody.data.message.should.equal("ORDER_NOT_FOUND");
 			}
 			else{
-				console.log('invalid')
+				console.log("invalid");
 			}
 		},
 
 	checkGetOrderDetail: function (responseBody, expectedStatusCode, orderId, expectedOrderStatus){
 		if(responseBody.status === 200){
-			responseBody.status.should.equal(expectedStatusCode)
-			expect(responseBody.data).to.be.jsonSchema(getOrderSuccessSchema)
-			responseBody.data.status.should.equal(expectedOrderStatus)
+			responseBody.status.should.equal(expectedStatusCode);
+			expect(responseBody.data).to.be.jsonSchema(getOrderSuccessSchema);
+			responseBody.data.status.should.equal(expectedOrderStatus);
 		}
 		else if(responseBody.status === 404)
 			{	
-				responseBody.status.should.equal(expectedStatusCode)
-				expect(responseBody.data).to.be.jsonSchema(responseFailSchema)
-				responseBody.data.message.should.equal('ORDER_NOT_FOUND')
+				responseBody.status.should.equal(expectedStatusCode);
+				expect(responseBody.data).to.be.jsonSchema(responseFailSchema);
+				responseBody.data.message.should.equal("ORDER_NOT_FOUND");
 			}
 		else{
-			console.log('invalid')
+			console.log("invalid");
 		}
 	},
 	checkCompleteOrder: function(responseBody, orderId, expectedStatusCode, expectedOrderStatus){
 		if(responseBody.status === 200){
-			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.status.should.equal(expectedOrderStatus)
-			expect(responseBody.data).to.be.jsonSchema(completeOrderSchema)
-			responseBody.data.id.should.equal(orderId)
+			responseBody.status.should.equal(expectedStatusCode);
+			responseBody.data.status.should.equal(expectedOrderStatus);
+			expect(responseBody.data).to.be.jsonSchema(completeOrderSchema);
+			responseBody.data.id.should.equal(orderId);
 
 		}
 		else if(responseBody.status === 422)
 		{
-			responseBody.status.should.equal(expectedStatusCode)
-			expect(responseBody.data).to.be.jsonSchema(responseFailSchema)
-			responseBody.data.message.should.equal('Order status is not ONGOING')
+			responseBody.status.should.equal(expectedStatusCode);
+			expect(responseBody.data).to.be.jsonSchema(responseFailSchema);
+			responseBody.data.message.should.equal("Order status is not ONGOING");
 		}
 		else if(responseBody.status === 404)
 		{	
-			responseBody.status.should.equal(expectedStatusCode)
-			expect(responseBody.data).to.be.jsonSchema(responseFailSchema)
-			responseBody.data.message.should.equal('ORDER_NOT_FOUND')
+			responseBody.status.should.equal(expectedStatusCode);
+			expect(responseBody.data).to.be.jsonSchema(responseFailSchema);
+			responseBody.data.message.should.equal("ORDER_NOT_FOUND");
 		}
 		else{
-			console.log('invalid')
+			console.log("invalid");
 		}
 
 	},
 	checkCancelledOrder: function(responseBody, orderId, expectedStatusCode, expectedOrderStatus){
 		if(responseBody.status === 200){
-			responseBody.status.should.equal(expectedStatusCode)
-			responseBody.data.status.should.equal(expectedOrderStatus)
-			expect(responseBody.data).to.be.jsonSchema(cancelOrderSchema)
-			responseBody.data.id.should.equal(orderId)
+			responseBody.status.should.equal(expectedStatusCode);
+			responseBody.data.status.should.equal(expectedOrderStatus);
+			expect(responseBody.data).to.be.jsonSchema(cancelOrderSchema);
+			responseBody.data.id.should.equal(orderId);
 
 		}
 		else if(responseBody.status === 422)
 		{
-			responseBody.status.should.equal(expectedStatusCode)
-			expect(responseBody.data).to.be.jsonSchema(responseFailSchema)
-			responseBody.data.message.should.equal('Order status is COMPLETED already')
+			responseBody.status.should.equal(expectedStatusCode);
+			expect(responseBody.data).to.be.jsonSchema(responseFailSchema);
+			responseBody.data.message.should.equal("Order status is COMPLETED already");
 		}
 		else if(responseBody.status === 404)
 		{	
-			responseBody.status.should.equal(expectedStatusCode)
-			expect(responseBody.data).to.be.jsonSchema(responseFailSchema)
-			responseBody.data.message.should.equal('ORDER_NOT_FOUND')
+			responseBody.status.should.equal(expectedStatusCode);
+			expect(responseBody.data).to.be.jsonSchema(responseFailSchema);
+			responseBody.data.message.should.equal("ORDER_NOT_FOUND");
 		}
 		else{
-			console.log('invalid')
+			console.log("invalid");
 		}
 
 	}
-
-}
+};

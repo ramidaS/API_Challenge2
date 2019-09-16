@@ -1,21 +1,22 @@
-const axios = require('axios')
-const config = require('./config')
-const allAPIsFunctions = require('./allAPIsFunctions')
-var checkResponse = require('./checkResponse')
-var chai = require('chai')
-    , chaiHttp = require('chai-http')
-var expect = require('expect')
-var should = require('chai').should()
-chai.use(chaiHttp)
-const calculationFunctions = require('./calculationFunctions')
-var moment = require('moment')
+const axios = require("axios");
+const config = require("./config");
+const allAPIsFunctions = require("./allAPIsFunctions");
+var checkResponse = require("./checkResponse");
+var chai = require("chai");
+var chaiHttp = require("chai-http");
+var expect = chai.expect;
+var should = chai.should();
+const calculationFunctions = require("./calculationFunctions");
+var moment = require("moment");
 moment().format();
 
-describe('/get orderDetail', function(){
-	let scheduledTime = new Date("2019-09-15T15:10:18.061Z")
-	let orderAt = moment.utc(scheduledTime)
-	let orderId = 0
-	let locations = [
+var today = new Date();
+
+describe("/get orderDetail", function(){
+	
+	var orderAt = moment.utc(today).add(1, "day");
+	var orderId = 0;
+	var locations = [
 	    {
 	        "lat": 22.344674, "lng": 114.124651
 	    },
@@ -25,57 +26,57 @@ describe('/get orderDetail', function(){
 	    {
 	        "lat": 22.385669, "lng": 114.186962
 	    }
-	]
+	];
 
 	beforeEach(async function(){
-		let response = await allAPIsFunctions.scheduleOrder(orderAt,locations)
-		orderId = response.data.id
-		return response, orderId
+		var response = await allAPIsFunctions.scheduleOrder(orderAt,locations);
+		orderId = response.data.id;
+		return response, orderId;
 	})
 
-	it('1: should return HTTP 200 and get ASSIGNING order detail successfully for normal flow.', async function(){
-		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		checkResponse.checkGetOrderDetail(orderInfo, 200, orderId, 'ASSIGNING')
+	it("1: should return HTTP 200 and get ASSIGNING order detail successfully for normal flow.", async function(){
+		var orderInfo = await allAPIsFunctions.getOrderDetails(orderId);
+		checkResponse.checkGetOrderDetail(orderInfo, 200, orderId, "ASSIGNING");
 	})
 
-	it('2: should return HTTP 200 and get ONGOING order detail successfully for normal flow.', async function(){
-		await allAPIsFunctions.driverTakeOrder(orderId)
-		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		checkResponse.checkGetOrderDetail(orderInfo, 200,orderId, 'ONGOING')
-
-	})
-
-	it('3: should return HTTP 200 and get COMPLETED order detail successfully for normal flow.', async function(){
-		await allAPIsFunctions.driverTakeOrder(orderId)
-		await allAPIsFunctions.driverCompleteOrder(orderId)
-		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		checkResponse.checkGetOrderDetail(orderInfo, 200, orderId, 'COMPLETED')
+	it("2: should return HTTP 200 and get ONGOING order detail successfully for normal flow.", async function(){
+		await allAPIsFunctions.driverTakeOrder(orderId);
+		var orderInfo = await allAPIsFunctions.getOrderDetails(orderId);
+		checkResponse.checkGetOrderDetail(orderInfo, 200,orderId, "ONGOING");
 
 	})
 
-	it('4: should return HTTP 200 and get ASSIGNING > CANCELLED order detail successfully for normal flow.', async function(){
-		await allAPIsFunctions.cancelOrder(orderId)
-		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		checkResponse.checkGetOrderDetail(orderInfo, 200, orderId, 'CANCELLED')
+	it("3: should return HTTP 200 and get COMPLETED order detail successfully for normal flow.", async function(){
+		await allAPIsFunctions.driverTakeOrder(orderId);
+		await allAPIsFunctions.driverCompleteOrder(orderId);
+		var orderInfo = await allAPIsFunctions.getOrderDetails(orderId);
+		checkResponse.checkGetOrderDetail(orderInfo, 200, orderId, "COMPLETED");
 
 	})
 
-	it('5: shouel return HTTP 200 and get ONGOING > CANCELLED order detail successfully for normal flow.', async function(){
-		await allAPIsFunctions.driverTakeOrder(orderId)
-		await allAPIsFunctions.cancelOrder(orderId)
-		let orderInfo = await allAPIsFunctions.getOrderDetails(orderId)
-		checkResponse.checkGetOrderDetail(orderInfo, 200, orderId, 'CANCELLED')
+	it("4: should return HTTP 200 and get ASSIGNING > CANCELLED order detail successfully for normal flow.", async function(){
+		await allAPIsFunctions.cancelOrder(orderId);
+		var orderInfo = await allAPIsFunctions.getOrderDetails(orderId);
+		checkResponse.checkGetOrderDetail(orderInfo, 200, orderId, "CANCELLED");
 
 	})
 
-	it('6: should return HTTP 404 because get orderId is not exists.', async function(){
-		let invalidOrderinfo = await allAPIsFunctions.getOrderDetails('9999999')			//Assume that order Id 9999999 isn't exists.
-		checkResponse.checkGetOrderDetail(invalidOrderinfo, 404)
+	it("5: shouel return HTTP 200 and get ONGOING > CANCELLED order detail successfully for normal flow.", async function(){
+		await allAPIsFunctions.driverTakeOrder(orderId);
+		await allAPIsFunctions.cancelOrder(orderId);
+		var orderInfo = await allAPIsFunctions.getOrderDetails(orderId);
+		checkResponse.checkGetOrderDetail(orderInfo, 200, orderId, "CANCELLED");
+
 	})
 
-	it('7: should return HTTP 404 because get orderId format is invalid', async function(){
-		let invalidOrderinfo = await allAPIsFunctions.getOrderDetails('abc')			//Assume that order Id 9999999 isn't exists.
-		invalidOrderinfo.status.should.equal(404)
-		invalidOrderinfo.data.should.equal('404 page not found\n')
+	it("6: should return HTTP 404 because get orderId is not exists.", async function(){
+		var invalidOrderinfo = await allAPIsFunctions.getOrderDetails("9999999");			//Assume that order Id 9999999 isn"t exists.
+		checkResponse.checkGetOrderDetail(invalidOrderinfo, 404);
+	})
+
+	it("7: should return HTTP 404 because get orderId format is invalid", async function(){
+		var invalidOrderinfo = await allAPIsFunctions.getOrderDetails("abc");			//Assume that order Id 9999999 isn"t exists.
+		invalidOrderinfo.status.should.equal(404);
+		invalidOrderinfo.data.should.equal("404 page not found\n");
 	})
 })
