@@ -11,6 +11,15 @@ const calculationFunctions = require('./calculationFunctions')
 var moment = require('moment')
 moment().format();
 
+const mocha = new Mocha({
+  reporter: 'mochawesome',
+  reporterOptions: {
+    overwrite: true,
+    reportTitle: 'Test Result',
+    showPassed: true
+  }
+})
+
 describe('Put /takeOrder', function(){
 	let scheduledTime = new Date("2019-09-15T15:10:18.061Z")
 	let orderAt = moment.utc(scheduledTime)
