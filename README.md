@@ -11,6 +11,7 @@
 **Pre-requisite**
 1) cd to root folder.
 2) run command `npm install` at root folder.
+3) Ensure that you have Docker and APIs running on your local machine.
 
 **Running the test**
 There are 6 test files as following:
