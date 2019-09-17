@@ -20,6 +20,7 @@ There are 6 test files as following:
 4) testCompleteOrder.js: for testing when driver completes orders.
 5) testCancelOrder.js: for testing when order is cancelled.
 6) testOrderdetail.js: for testing get order detail scenarios.
+
 There are other 4files for functions supported the tests.
 
 *Step to run the test*
