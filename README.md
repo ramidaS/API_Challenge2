@@ -1,4 +1,4 @@
-# API_Challenge
+# API_Test_RS
 
  **Getting Started**
  This test for API challenge is using mocha framework. There are 5 APIs including in the test as following:
