@@ -26,7 +26,8 @@ There are other 4files for functions supported the tests.
 *Step to run the test*
 1) After installation successfully, cd to root folder
 2) run `npm test run`
-3) There will be a report generated after run in `mochawesome-report` folder.
+There will be a report generated after run in `mochawesome-report` folder.
+Please check `mochawesome.html` for report.
 
 **Author**
 Ramida Sakchaisomboon
