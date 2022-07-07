@@ -14,7 +14,7 @@
     "expect": "^24.9.0",
     "jslint": "^0.12.1",
     "mochawesome-report-generator": "^4.0.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "momentjs": "^2.0.0",
     "node": "^12.10.0",
     "request": "^2.88.0",
